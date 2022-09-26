@@ -24,7 +24,7 @@ pipeline {
 		}
 		stage("get python version") {
 			steps {
-				echo "python -version"
+				sh "python -version"
 			}
 		}
 
