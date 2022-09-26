@@ -1,5 +1,7 @@
 pipeline {
-	agent none
+	agent {
+		docker { image 'alpine:3.16' }
+	}
 
 	triggers {
 		pollSCM 'H/1 * * * *'
@@ -15,6 +17,9 @@ pipeline {
 			steps {
 		 		 echo "test"
 			}
+		}
+		stage("get python version") {
+            echo "python -version"
 		}
 
 	}
