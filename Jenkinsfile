@@ -1,5 +1,6 @@
 pipeline {
 	agent {
+		// usermod -aG docker jenkins
 		docker { image 'alpine:3.16' }
 	}
 
