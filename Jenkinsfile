@@ -12,7 +12,7 @@ pipeline {
 
 	stages {
 		stage("test") {
-			step {
+			steps {
 		 		 echo "test"
 			}
 		}
@@ -20,6 +20,8 @@ pipeline {
 	}
 
 	post {
-        echo "complete"
+		always {
+			        echo "complete"
+		}
 	}
 }
