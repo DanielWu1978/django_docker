@@ -9,6 +9,10 @@ pipeline {
 		pollSCM 'H/1 * * * *'
 	}
 
+	parameters {
+		booleanParam(name: 'SKIP', defaultValue: true, description: 'skip this build?')
+	}
+
 	options {
 		timestamps()
 		timeout(time: 5, unit: 'MINUTES')
