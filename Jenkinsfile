@@ -1,6 +1,7 @@
 pipeline {
 	agent {
 		// usermod -aG docker jenkins
+		// or chmod 777 /var/run/docker.sock
 		docker { image 'alpine:3.16' }
 	}
 
