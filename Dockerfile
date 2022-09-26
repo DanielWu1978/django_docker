@@ -1,13 +1,23 @@
-FROM python:3.10.7-alpine3.16
+FROM python:3.8.12-alpine3.15
+ADD requirements.txt /app/requirements.txt
 
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends \
-	&& rm -rf /var/lib/apt/lists/*
+RUN set -ex \
+    && apk add --no-cache --virtual .build-deps postgresql-dev build-base \
+    && python -m venv /env \
+    && /env/bin/pip install --upgrade pip \
+    && /env/bin/pip install --no-cache-dir -r /app/requirements.txt \
+    && runDeps="$(scanelf --needed --nobanner --recursive /env \
+        | awk '{ gsub(/,/, "\nso:", $2); print "so:" $2 }' \
+        | sort -u \
+        | xargs -r apk info --installed \
+        | sort -u)" \
+    && apk add --virtual rundeps $runDeps \
+    && apk del .build-deps
 
-WORKDIR /usr/src/app
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
-COPY . .
+ADD django-polls /app
+WORKDIR /app
 
-EXPOSE 8080
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8080"]
+ENV VIRTUAL_ENV /env
+ENV PATH /env/bin:$PATH
+
+EXPOSE 8000
