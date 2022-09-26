@@ -1,4 +1,4 @@
-FROM python:3.8.12-alpine3.15
+FROM python:3.10.7-alpine3.16
 ADD requirements.txt /app/requirements.txt
 
 RUN set -ex \
