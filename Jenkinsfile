@@ -21,6 +21,17 @@ pipeline {
 	}
 
 	stages {
+		stage("pre step") {
+			environment { NAME = "Daneil Wu" }
+			when { expression { return !params.SKIP } }
+			steps {
+				echo "My name is $NAME"
+			}
+
+		}
+	}
+
+	stages {
 		stage("test") {
 			steps {
 		 		 echo "test"
