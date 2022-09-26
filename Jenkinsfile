@@ -19,7 +19,9 @@ pipeline {
 			}
 		}
 		stage("get python version") {
-            echo "python -version"
+			steps {
+				echo "python -version"
+			}
 		}
 
 	}
