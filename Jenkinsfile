@@ -6,7 +6,7 @@ pipeline {
 	}
 
 	parameters {
-		booleanParam(name: 'SKIP', defaultValue: false, description: 'skip this build?')
+		booleanParam(name: 'pushToECR', defaultValue: false, description: 'push image to AWS ECR?')
 	}
 
 	environment {
@@ -31,7 +31,6 @@ pipeline {
 
 		stage("pre step") {
 			environment { NAME = "Daneil Wu" }
-			when { expression { return !params.SKIP } }
 			steps {
 				echo "My name is $NAME"
 			}
@@ -43,17 +42,6 @@ pipeline {
 			}
 		}
 
-         stage('Logging into AWS ECR') {
-            steps {
-                script {
-					    docker.withRegistry("https://$REPOSITORY_URI", "$AWS_CREDENTIALS") {
-							docker.image("$IMAGE_REPO_NAME").push('latest')
-					    }
-					// sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
-                }
-
-            }
-        }
 
 		stage('Building django site docker image') {
 			steps{
@@ -89,6 +77,19 @@ pipeline {
 				sh "ps -ef|grep manager.py"
 			}
 		}
+
+         stage('push the image to ecr') {
+            steps {
+				when { expression { return !params.pushToECR} }
+                script {
+					    docker.withRegistry("https://$REPOSITORY_URI", "$AWS_CREDENTIALS") {
+							docker.image("$IMAGE_REPO_NAME").push('latest')
+					    }
+					// sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
+                }
+
+            }
+        }
 
 	}
 
