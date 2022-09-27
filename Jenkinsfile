@@ -6,7 +6,7 @@ pipeline {
 	}
 
 	parameters {
-		booleanParam(name: 'SKIP', defaultValue: true, description: 'skip this build?')
+		booleanParam(name: 'SKIP', defaultValue: false, description: 'skip this build?')
 	}
 
 	options {
