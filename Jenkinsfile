@@ -42,6 +42,14 @@ pipeline {
 			}
 		}
 
+		stage('Building django site docker image') {
+			steps{
+				script {
+					dockerImage = docker.build  "danielsite:latest"
+				}
+			}
+		}
+
 	}
 
 	post {
