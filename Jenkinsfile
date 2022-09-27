@@ -29,6 +29,15 @@ pipeline {
 
 	stages {
 
+        stage('Back-end') {
+            agent {
+                docker { image 'maven:3.8.1-adoptopenjdk-11' }
+            }
+            steps {
+                sh 'mvn --version'
+            }
+        }
+
 		stage("pre step") {
 			environment { NAME = "Daneil Wu" }
 			steps {
