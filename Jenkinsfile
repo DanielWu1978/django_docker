@@ -1,10 +1,6 @@
 pipeline {
-	agent {
-		// usermod -aG docker jenkins
-		// or chmod 777 /var/run/docker.sock
-		docker { image 'python:3.10.7-alpine3.16' }
-	}
 
+	agent none
 	triggers {
 		pollSCM 'H/1 * * * *'
 	}
@@ -37,12 +33,18 @@ pipeline {
 		}
 
 		stage("get python version") {
+			agent {
+				// usermod -aG docker jenkins
+				// or chmod 777 /var/run/docker.sock
+				docker { image 'python:3.10.7-alpine3.16' }
+			}
 			steps {
 				sh "python --version"
 			}
 		}
 
 		stage('Building django site docker image') {
+			agent any
 			steps{
 				script {
 					dockerImage = docker.build  "danielsite:latest"
