@@ -70,7 +70,7 @@ pipeline {
 				// or chmod 777 /var/run/docker.sock
 				docker {
 					image 'danielsite:latest'
-					args "-p $MAPPING_PORT:$DJANGO_PORT"
+					reuseNode true
 				}
 			}
 			steps {
