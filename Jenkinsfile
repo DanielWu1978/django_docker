@@ -9,6 +9,11 @@ pipeline {
 		booleanParam(name: 'SKIP', defaultValue: false, description: 'skip this build?')
 	}
 
+	environment {
+		DJANGO_PORT = "8000"
+		MAPPING_PORT = "9000"
+	}
+
 	options {
 		timestamps()
 		timeout(time: 5, unit: 'MINUTES')
@@ -46,10 +51,14 @@ pipeline {
 			agent {
 				// usermod -aG docker jenkins
 				// or chmod 777 /var/run/docker.sock
-				docker { image 'danielsite:latest' }
+				docker {
+					image 'danielsite:latest'
+					arges = "-p " + $MAPPING_PORT + ":" + $DJANGO_PORT
+				}
 			}
 			steps {
 				sh "python --version"
+				sh "curl http://localhost:" + $DJANGO_PORT
 			}
 		}
 
