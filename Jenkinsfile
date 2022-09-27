@@ -46,8 +46,8 @@ pipeline {
          stage('Logging into AWS ECR') {
             steps {
                 script {
-					    docker.withRegistry("https://$REPOSITORY_URI", $AWS_CREDENTIALS) {
-							docker.image($IMAGE_REPO_NAME).push('latest')
+					    docker.withRegistry("https://$REPOSITORY_URI", "$AWS_CREDENTIALS") {
+							docker.image("$IMAGE_REPO_NAME").push('latest')
 					    }
 					// sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
                 }
