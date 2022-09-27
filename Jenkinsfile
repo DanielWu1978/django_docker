@@ -51,43 +51,30 @@ pipeline {
 		}
 
 
-		stage("verify django process is running") {
-			agent {
-				// usermod -aG docker jenkins
-				// or chmod 777 /var/run/docker.sock
-				docker {
-					image 'danielsite:latest'
-					args "-p $MAPPING_PORT:$DJANGO_PORT"
-					// args "-p 9000:8000"
-					// args  "-p " + $MAPPING_PORT + ":" + $DJANGO_PORT
-				}
-			}
-			steps {
-				sh "ps -ef|grep manager.py"
-			}
-		}
+		// stage("verify django process is running") {
+		// 	agent {
+		// 		// usermod -aG docker jenkins
+		// 		// or chmod 777 /var/run/docker.sock
+		// 		docker {
+		// 			image 'danielsite:latest'
+		// 			args "-p $MAPPING_PORT:$DJANGO_PORT"
+		// 			// args "-p 9000:8000"
+		// 			// args  "-p " + $MAPPING_PORT + ":" + $DJANGO_PORT
+		// 		}
+		// 	}
+		// 	steps {
+		// 		sh "ps -ef|grep manager.py"
+		// 	}
+		// }
 
 		stage("test django site using curl") {
-			agent any
 			steps {
-				sh "docker run -d --name -p 9000:8000 danielsite:latest"
+				sh "docker run -d --name test_run -p $MAPPING_PORT:$DJANGO_PORT danielsite:latest"
 				sh "sleep 5"
-				sh "curl http://localhost:$DJANGO_PORT"
+				sh "curl http://localhost:$MAPPING_PORT"
 				sh "docker stop --name"
 			}
 		}
-
-		stage("get python version") {
-			agent {
-				// usermod -aG docker jenkins
-				// or chmod 777 /var/run/docker.sock
-				docker { image 'python:3.10.7-alpine3.16' }
-			}
-			steps {
-				sh "python --version"
-			}
-		}
-
 
 	}
 
