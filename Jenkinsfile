@@ -17,6 +17,7 @@ pipeline {
         REPOSITORY_URI = "617815228888.dkr.ecr.us-east-1.amazonaws.com/danielsite"
 		DJANGO_PORT = "8000"
 		MAPPING_PORT = "9000"
+		AWS_CREDENTIALS = "ecr:us-east-1:aws-credentials"
 	}
 
 	options {
@@ -42,6 +43,18 @@ pipeline {
 			}
 		}
 
+         stage('Logging into AWS ECR') {
+            steps {
+                script {
+					    docker.withRegistry("https://$REPOSITORY_URI", $AWS_CREDENTIALS) {
+							docker.image($IMAGE_REPO_NAME).push('latest')
+					    }
+					// sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
+                }
+
+            }
+        }
+
 		stage('Building django site docker image') {
 			steps{
 				script {
@@ -50,22 +63,6 @@ pipeline {
 			}
 		}
 
-
-		// stage("verify django process is running") {
-		// 	agent {
-		// 		// usermod -aG docker jenkins
-		// 		// or chmod 777 /var/run/docker.sock
-		// 		docker {
-		// 			image 'danielsite:latest'
-		// 			args "-p $MAPPING_PORT:$DJANGO_PORT"
-		// 			// args "-p 9000:8000"
-		// 			// args  "-p " + $MAPPING_PORT + ":" + $DJANGO_PORT
-		// 		}
-		// 	}
-		// 	steps {
-		// 		sh "ps -ef|grep manager.py"
-		// 	}
-		// }
 
 		stage("test django site using curl") {
 			steps {
@@ -76,6 +73,20 @@ pipeline {
 				sh "curl http://localhost:$MAPPING_PORT"
 				sh "docker stop test_run || echo 'stopped the test_run docker instance'"
 				sh "docker rm test_run || echo 'removed the test_run docker instance'"
+			}
+		}
+
+		stage("verify django process is running") {
+			agent {
+				// usermod -aG docker jenkins
+				// or chmod 777 /var/run/docker.sock
+				docker {
+					image 'danielsite:latest'
+					args "-p $MAPPING_PORT:$DJANGO_PORT"
+				}
+			}
+			steps {
+				sh "ps -ef|grep manager.py"
 			}
 		}
 
