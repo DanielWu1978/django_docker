@@ -74,12 +74,13 @@ pipeline {
 				}
 			}
 			steps {
+				sh "sleep 5"
 				sh "ps -ef|grep manager.py"
 			}
 		}
 
          stage('push the image to ecr') {
-			when { expression { return !params.pushToECR} }
+			when { expression { return params.pushToECR} }
             steps {
                 script {
 					    docker.withRegistry("https://$REPOSITORY_URI", "$AWS_CREDENTIALS") {
