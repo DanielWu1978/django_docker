@@ -1,11 +1,12 @@
 FROM python:3.10.7-alpine3.16
 RUN mkdir /app
-ADD requirements.txt /app/requirements.txt
+COPY requirements.txt /app/requirements.txt
 RUN pip install -r /app/requirements.txt
-ADD danielsite /app
+COPY danielsite /app
 WORKDIR /app
 
 ENV VIRTUAL_ENV /env
 ENV PATH /env/bin:$PATH
 
 EXPOSE 8000
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
