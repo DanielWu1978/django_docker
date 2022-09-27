@@ -79,8 +79,8 @@ pipeline {
 		}
 
          stage('push the image to ecr') {
+			when { expression { return !params.pushToECR} }
             steps {
-				when { expression { return !params.pushToECR} }
                 script {
 					    docker.withRegistry("https://$REPOSITORY_URI", "$AWS_CREDENTIALS") {
 							docker.image("$IMAGE_REPO_NAME").push('latest')
