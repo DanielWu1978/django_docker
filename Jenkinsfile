@@ -69,10 +69,13 @@ pipeline {
 
 		stage("test django site using curl") {
 			steps {
+				sh "docker stop test_run || echo 'stopped the test_run docker instance'"
+				sh "docker rm test_run || echo 'removed the test_run docker instance'"
 				sh "docker run -d --name test_run -p $MAPPING_PORT:$DJANGO_PORT danielsite:latest"
 				sh "sleep 5"
 				sh "curl http://localhost:$MAPPING_PORT"
-				sh "docker stop --name"
+				sh "docker stop test_run || echo 'stopped the test_run docker instance'"
+				sh "docker rm test_run || echo 'removed the test_run docker instance'"
 			}
 		}
 
