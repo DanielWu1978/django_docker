@@ -32,6 +32,27 @@ pipeline {
 			}
 		}
 
+		stage('Building django site docker image') {
+			agent any
+			steps{
+				script {
+					dockerImage = docker.build  "danielsite:latest"
+				}
+			}
+		}
+
+
+		stage("test django site") {
+			agent {
+				// usermod -aG docker jenkins
+				// or chmod 777 /var/run/docker.sock
+				docker { image 'danielsite:latest' }
+			}
+			steps {
+				sh "python --version"
+			}
+		}
+
 		stage("get python version") {
 			agent {
 				// usermod -aG docker jenkins
@@ -43,14 +64,6 @@ pipeline {
 			}
 		}
 
-		stage('Building django site docker image') {
-			agent any
-			steps{
-				script {
-					dockerImage = docker.build  "danielsite:latest"
-				}
-			}
-		}
 
 	}
 
