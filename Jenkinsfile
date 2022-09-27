@@ -53,7 +53,7 @@ pipeline {
 				// or chmod 777 /var/run/docker.sock
 				docker {
 					image 'danielsite:latest'
-					arges = "-p " + $MAPPING_PORT + ":" + $DJANGO_PORT
+					args = "-p " + $MAPPING_PORT + ":" + $DJANGO_PORT
 				}
 			}
 			steps {
