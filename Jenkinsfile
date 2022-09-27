@@ -1,6 +1,6 @@
 pipeline {
 
-	agent none
+	agent any
 	triggers {
 		pollSCM 'H/1 * * * *'
 	}
@@ -10,6 +10,11 @@ pipeline {
 	}
 
 	environment {
+        AWS_ACCOUNT_ID="617815228888"
+        AWS_DEFAULT_REGION="us-east-1"
+        IMAGE_REPO_NAME="danielsite"
+        IMAGE_TAG="v1"
+        REPOSITORY_URI = "617815228888.dkr.ecr.us-east-1.amazonaws.com/danielsite"
 		DJANGO_PORT = "8000"
 		MAPPING_PORT = "9000"
 	}
@@ -38,7 +43,6 @@ pipeline {
 		}
 
 		stage('Building django site docker image') {
-			agent any
 			steps{
 				script {
 					dockerImage = docker.build  "danielsite:latest"
@@ -47,7 +51,7 @@ pipeline {
 		}
 
 
-		stage("test django site") {
+		stage("verify django process is running") {
 			agent {
 				// usermod -aG docker jenkins
 				// or chmod 777 /var/run/docker.sock
@@ -58,8 +62,17 @@ pipeline {
 				}
 			}
 			steps {
-				sh "python --version"
-				sh "curl http://localhost:" + $DJANGO_PORT
+				sh "ps -ef|grep manager.py"
+			}
+		}
+
+		stage("test django site using curl") {
+			agent any
+			steps {
+				sh "docker run -d --name -p 9000:8000 danielsite:latest"
+				sh "sleep 5"
+				sh "curl http://localhost:$DJANGO_PORT"
+				sh "docker stop --name"
 			}
 		}
 
